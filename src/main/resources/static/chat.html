@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>チャット</title>
+</head>
+<body>
+
+<h1>チャット</h1>
+
+<input type="text" id="message" oninput="checkInput()">
+<button id="sendButton" onclick="sendMessage()" disabled>送信</button>
+
+<ul id="chatList"></ul>
+
+<script>
+
+async function checkInput() {
+
+    const input = document.getElementById("message");
+
+    const button = document.getElementById("sendButton");
+
+    button.disabled = input.value.trim() === "";
+}
+
+
+async function sendMessage() {
+
+    const input = document.getElementById("message");
+
+    // 空文字チェック
+    if (input.value.trim() === "") {
+        alert("文字を入力してください");
+        return;
+    }
+
+
+    await fetch("/chat", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(input.value)
+    });
+
+    input.value = "";
+
+    loadMessages();
+    checkInput();
+}
+
+async function loadMessages() {
+
+    const response = await fetch("/chat");
+
+    const messages = await response.json();
+
+    const list = document.getElementById("chatList");
+
+    list.innerHTML = "";
+
+    messages.forEach(msg => {
+
+        const li = document.createElement("li");
+
+        li.textContent = msg;
+
+        list.appendChild(li);
+    });
+}
+
+// 1秒ごと更新
+setInterval(loadMessages, 1000);
+
+loadMessages();
+
+</script>
+
+</body>
+</html>
