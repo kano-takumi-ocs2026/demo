@@ -8,7 +8,13 @@
 
 <h1>チャット</h1>
 
-<input type="text" id="message" oninput="checkInput()">
+<input
+    type="text"
+    id="message"
+    oninput="checkInput()"
+    onkeydown="handleEnter(event)"
+>
+
 <button id="sendButton" onclick="sendMessage()" disabled>送信</button>
 
 <ul id="chatList"></ul>
@@ -41,7 +47,12 @@ async function sendMessage() {
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(input.value)
+        body: JSON.stringify({
+            message: input.value,
+            roomId: 1,
+            teamId: 1,
+            playerId: 1
+        })
     });
 
     input.value = "";
@@ -64,10 +75,24 @@ async function loadMessages() {
 
         const li = document.createElement("li");
 
-        li.textContent = msg;
+        li.textContent = 
+            "[Room:" + msg.roomId + "] " +
+            "[Team:" + msg.teamId + "] " +
+            "[Player:" + msg.playerId + "] " +
+            msg.message;
 
         list.appendChild(li);
     });
+}
+
+async function handleEnter(event) {
+
+    if (event.key === "Enter") {
+
+        event.preventDefault();
+
+        sendMessage();
+    }
 }
 
 // 1秒ごと更新
