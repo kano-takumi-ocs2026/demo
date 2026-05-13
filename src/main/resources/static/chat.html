@@ -1,27 +1,109 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>チャット</title>
-</head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/css.css">
+<title>チャット</title>
+
 <body>
 
-<h1>チャット</h1>
+<div class="chat-container">
 
-<input
-    type="text"
-    id="message"
-    oninput="checkInput()"
-    onkeydown="handleEnter(event)"
->
+    <div class="chat-header">
+        チャット
+    </div>
 
-<button id="sendButton" onclick="sendMessage()" disabled>送信</button>
+    <div id="chatMessages" class="chat-messages">
 
-<ul id="chatList"></ul>
+    </div>
+
+    <div class="chat-input">
+
+        <input
+            type="text"
+            id="message"
+            placeholder="メッセージを入力"
+            oninput="checkInput()"
+            onkeydown="handleEnter(event)"
+        >
+
+        <button
+            id="sendButton"
+            onclick="sendMessage()"
+            disabled
+        >
+            送信
+        </button>
+
+    </div>
+
+</div>
 
 <script>
 
-async function checkInput() {
+async function sendMessage() {
+
+    const input = document.getElementById("message");
+
+    if(input.value.trim() === ""){
+        return;
+    }
+
+    await fetch("/chat", {
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+            message:input.value,
+            roomId:1,
+            teamId:1,
+            playerId:1
+        })
+    });
+
+    input.value = "";
+
+    checkInput();
+
+    loadMessages();
+}
+
+async function loadMessages(){
+
+    const response = await fetch("/chat");
+
+    const messages = await response.json();
+
+    const chat = document.getElementById("chatMessages");
+
+    chat.innerHTML = "";
+
+    messages.forEach(msg => {
+
+        const div = document.createElement("div");
+
+        div.className = "message";
+
+        // div.textContent = msg.message;
+        div.innerHTML = `
+            <div>Room : ${msg.roomId}</div>
+            <div>Team : ${msg.teamId}</div>
+            <div>Player : ${msg.playerId}</div>
+            <hr>
+            <div>${msg.message}</div>
+        `;
+
+        chat.appendChild(div);
+    });
+
+    chat.scrollTop = chat.scrollHeight;
+}
+
+function checkInput(){
 
     const input = document.getElementById("message");
 
@@ -30,64 +112,9 @@ async function checkInput() {
     button.disabled = input.value.trim() === "";
 }
 
+function handleEnter(event){
 
-async function sendMessage() {
-
-    const input = document.getElementById("message");
-
-    // 空文字チェック
-    if (input.value.trim() === "") {
-        alert("文字を入力してください");
-        return;
-    }
-
-
-    await fetch("/chat", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            message: input.value,
-            roomId: 1,
-            teamId: 1,
-            playerId: 1
-        })
-    });
-
-    input.value = "";
-
-    loadMessages();
-    checkInput();
-}
-
-async function loadMessages() {
-
-    const response = await fetch("/chat");
-
-    const messages = await response.json();
-
-    const list = document.getElementById("chatList");
-
-    list.innerHTML = "";
-
-    messages.forEach(msg => {
-
-        const li = document.createElement("li");
-
-        li.textContent = 
-            "[Room:" + msg.roomId + "] " +
-            "[Team:" + msg.teamId + "] " +
-            "[Player:" + msg.playerId + "] " +
-            msg.message;
-
-        list.appendChild(li);
-    });
-}
-
-async function handleEnter(event) {
-
-    if (event.key === "Enter") {
+    if(event.key === "Enter"){
 
         event.preventDefault();
 
@@ -95,8 +122,7 @@ async function handleEnter(event) {
     }
 }
 
-// 1秒ごと更新
-setInterval(loadMessages, 1000);
+setInterval(loadMessages,1000);
 
 loadMessages();
 

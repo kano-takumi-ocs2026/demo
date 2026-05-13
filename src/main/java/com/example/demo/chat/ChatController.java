@@ -3,6 +3,9 @@ package com.example.demo.chat;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.chat.message.ChatMessage;
+
+import tools.jackson.databind.ObjectMapper;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,9 +19,16 @@ public class ChatController {
     // メッセージ送信
     @PostMapping
     public void sendMessage(@RequestBody String message) {
-        ChatMessage chatMessage = new ChatMessage(message, 1L, 1L, 1L);
-        messages.add(chatMessage);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            ChatMessage chatMessage = objectMapper.readValue(message, ChatMessage.class);
+            messages.add(chatMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
+
 
     // メッセージ取得
     @GetMapping
