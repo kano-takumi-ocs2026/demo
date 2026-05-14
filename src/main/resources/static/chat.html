@@ -43,11 +43,20 @@
 <input type="hidden" id="teamId" value="1">
 <input type="hidden" id="playerId" value="1">
 
+
 <script>
+
+const playerName =
+    sessionStorage.getItem("playerName");
+
+const playerId =
+    sessionStorage.getItem("playerId");
 
 async function sendMessage() {
 
+    
     const input = document.getElementById("message");
+
 
     if(input.value.trim() === ""){
         return;
@@ -65,7 +74,8 @@ async function sendMessage() {
             message:input.value,
             roomId:document.getElementById("roomId").value,
             teamId:document.getElementById("teamId").value,
-            playerId:document.getElementById("playerId").value
+            playerId: playerId,
+            playerName: playerName
         })
     });
 
@@ -93,12 +103,21 @@ async function loadMessages(){
         div.className = "message";
 
         // div.textContent = msg.message;
+        // div.innerHTML = `
+        //     <div>Room : ${msg.roomId}</div>
+        //     <div>Team : ${msg.teamId}</div>
+        //     <div>Player : ${msg.playerName}</div>
+        //     <hr>
+        //     <div>${msg.message}</div>
+        // `;
         div.innerHTML = `
-            <div>Room : ${msg.roomId}</div>
-            <div>Team : ${msg.teamId}</div>
-            <div>Player : ${msg.playerId}</div>
-            <hr>
-            <div>${msg.message}</div>
+            <div class="player-name">
+                ${msg.playerName}
+            </div>
+
+            <div class="message-text">
+                ${msg.message}
+            </div>
         `;
 
         chat.appendChild(div);

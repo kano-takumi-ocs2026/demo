@@ -122,3 +122,18 @@ body{
     cursor:not-allowed;
 }
 
+.player-name{
+
+    font-size:12px;
+
+    color:gray;
+
+    margin-bottom:5px;
+}
+
+.message-text{
+
+    font-size:16px;
+
+    word-break:break-word;
+}

@@ -10,14 +10,19 @@ public class ChatMessage {
 
     private Long playerId;
 
+    private String playerName;
+
+    
+
     public ChatMessage() {
     }
 
-    public ChatMessage(String message, Long roomId, Long teamId, Long playerId) {
+    public ChatMessage(String message, Long roomId, Long teamId, Long playerId, String playerName) {
         this.message = message;
         this.roomId = roomId;
         this.teamId = teamId;
         this.playerId = playerId;
+        this.playerName = playerName;
     }
 
     public String getMessage() {
@@ -50,5 +55,13 @@ public class ChatMessage {
 
     public void setPlayerId(Long playerId) {
         this.playerId = playerId;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
     }
 }
